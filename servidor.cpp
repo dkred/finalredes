@@ -13,8 +13,9 @@
 #define BUFFER_LEN 1024
 using namespace std; 
 //servidor recibe en UDP la peticion y este lo convierte en TCP 
+
 char buf[BUFFER_LEN]; 
-void  funcion_client()
+void  funcion_resolver_peticion()
   {
     struct sockaddr_in stSockAddr;
     int Res;
@@ -54,7 +55,7 @@ void  funcion_client()
       exit(EXIT_FAILURE);
     }
    
-    n = write(SocketFD,buf,18);
+    n = write(SocketFD,buf,255);
     /* perform read write operations ... */
  
     shutdown(SocketFD, SHUT_RDWR);
@@ -62,37 +63,30 @@ void  funcion_client()
     close(SocketFD);
   }
  
-  void funcion_server()
+  void funcion_recibir_peticion_proxy()
   {
-     int sockfd; /* descriptor para el socket */
-     struct sockaddr_in my_addr; /* direccion IP y numero de puerto local */
-     struct sockaddr_in their_addr; /* direccion IP y numero de puerto del cliente */
-     /* addr_len contendra el tamanio de la estructura sockadd_in y numbytes el
-     * numero de bytes recibidos
-     */
+     int sockfd;
+     struct sockaddr_in my_addr; 
+     struct sockaddr_in their_addr; 
      int addr_len, numbytes;
-     /* Buffer de recepción */
-     
-     /* se crea el socket */
+    
      if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
      perror("socket");
      exit(1);
      }
      
-     /* Se establece la estructura my_addr para luego llamar a bind() */
-     my_addr.sin_family = AF_INET; /* usa host byte order */
-     my_addr.sin_port = htons(SERVER_PORT); /* usa network byte order */
-     my_addr.sin_addr.s_addr = INADDR_ANY; /* escuchamos en todas las IPs */
-     bzero(&(my_addr.sin_zero), 8); /* rellena con ceros el resto de la estructura */
-     
-     /* Se le da un nombre al socket (se lo asocia al puerto e IPs) */
+    
+     my_addr.sin_family = AF_INET; 
+     my_addr.sin_port = htons(SERVER_PORT); 
+     my_addr.sin_addr.s_addr = INADDR_ANY; 
+     bzero(&(my_addr.sin_zero), 8); 
      
      if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1) {
      perror("bind");
      exit(1);
      }
      
-     /* Se reciben los datos (directamente, UDP no necesita conexión) */
+     
      addr_len = sizeof(struct sockaddr);
     
      
@@ -101,7 +95,7 @@ void  funcion_client()
      exit(1);
      }
      cout << buf<<endl;
-     /* cerramos descriptor del socket */
+    
      close(sockfd);
    
    }
@@ -109,8 +103,8 @@ void  funcion_client()
    int main(void)
   {
     
-      funcion_server();
-      //funcion_client();
+      funcion_recibir_peticion_proxy();
+      //funcion_resolver_peticion();
    
     return 0;
   }

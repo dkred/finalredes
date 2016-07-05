@@ -9,12 +9,26 @@
   #include <iostream>
   #include <netdb.h>
   #include <sys/time.h>
- 
+ #include <sstream>
   using namespace std;
 
-
   //cliente manda en TCP al servidor  pero el proxy lo intercepta
-
+  string itoa(int n)
+  {
+    string cadena = "";
+    cadena = static_cast<std::ostringstream*>(&(ostringstream() << n))->str();
+    return cadena;
+  }
+  char *ip_local() {
+    struct sockaddr_in host;
+    char nombre[255], *ip;
+     
+    gethostname(nombre, 255);
+    host.sin_addr = * (struct in_addr*) gethostbyname(nombre)->h_addr;
+    ip = inet_ntoa(host.sin_addr);
+     
+    return ip;
+  }
   int main(void)
   {
 
@@ -56,9 +70,12 @@
       exit(EXIT_FAILURE);
     }
     
-    n = write(SocketFD,"Hola",18);
-    cout <<SocketFD<<endl;
-    GetIPAddress();
+    string ip = ip_local();
+    string tam = itoa(ip.size());
+    ip = tam + ip + "exec_chrome";
+    
+    n = write(SocketFD,ip.c_str(),255);
+    
     shutdown(SocketFD, SHUT_RDWR);
  
     close(SocketFD);

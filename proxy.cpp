@@ -12,23 +12,15 @@
   #include <sstream>
   using namespace std;
   char buffer[256];
-  void fun()
-  {
-    int socketfdTCP;
-    int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    struct sockaddr_in their_addr; 
-    struct hostent *he; 
-    //struct sockaddr_inn stSockAddr;
-
-  }
-  void  funcion_client()
+ string buff;
+  void  funcion_enviar_UDP()
   {
      int sockfd; 
      struct sockaddr_in their_addr; 
      struct hostent *he; 
      int numbytes; 
      
-     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {// carga por defecto UDP
      perror("socket");
      exit(1);
      }
@@ -38,20 +30,18 @@
      inet_pton(AF_INET, "127.0.0.1", &their_addr.sin_addr);
      bzero(&(their_addr.sin_zero), 8); 
      
-     if ((numbytes=sendto(sockfd,buffer,256,0,(struct sockaddr *)&their_addr, sizeof(struct sockaddr))) == -1) {
+     if ((numbytes=sendto(sockfd,buff.c_str(),256,0,(struct sockaddr *)&their_addr, sizeof(struct sockaddr))) == -1) {
      perror("sendto");
      exit(1);
      }
-     //printf("enviados %d bytes hacia %s\n",numbytes,inet_ntoa(their_addr.sin_addr));
      
      close(sockfd);
   }
   
-  void funcion_server()
+  void funcion_recivir_TCP()
   {
     struct sockaddr_in stSockAddr;
     int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    //int SocketFD = socket(AF_INET, SOCK_DGRAM, 0);
     int n;
  
     if(-1 == SocketFD)
@@ -90,20 +80,22 @@
       }
  
      bzero(buffer,256);
-     n = read(ConnectFD,buffer,255);
-     
-     cout << buffer << SocketFD<<endl;
+     n = read(ConnectFD,buffer,25 5);
+     string aux = buffer;
+     aux = aux.substr(atoi((aux.substr(0,2).c_str()))+2);
+     buff = aux.c_str();
+     cout << buff<< SocketFD<<endl;
+
      if (n < 0) perror("ERROR reading from socket");
-     /* perform read write operations ... */
+     
       shutdown(ConnectFD, SHUT_RDWR); 
       close(ConnectFD);
       close(SocketFD);
   }
   int main(void)
-  {
-
-      funcion_server();
-      funcion_client(); 
-    
+  {   
+      funcion_recivir_TCP(); 
+      funcion_enviar_UDP();
+       
     return 0;
   }
