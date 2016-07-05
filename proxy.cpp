@@ -12,43 +12,38 @@
   #include <sstream>
   using namespace std;
   char buffer[256];
-  string itoa(int n)
+  void fun()
   {
-    string cadena = "";
-    cadena = static_cast<std::ostringstream*>(&(std::ostringstream() << n))->str();
-    return cadena;
+    int socketfdTCP;
+    int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    struct sockaddr_in their_addr; 
+    struct hostent *he; 
+    //struct sockaddr_inn stSockAddr;
+
   }
   void  funcion_client()
   {
-     int sockfd; /* descriptor a usar con el socket */
-     struct sockaddr_in their_addr; /* almacenara la direccion IP y numero de puerto del servidor */
-     struct hostent *he; /* para obtener nombre del host */
-     int numbytes; /* conteo de bytes a escribir */
-     /* Creamos el socket */
+     int sockfd; 
+     struct sockaddr_in their_addr; 
+     struct hostent *he; 
+     int numbytes; 
+     
      if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
      perror("socket");
      exit(1);
      }
-
-     /* a donde mandar */
-     their_addr.sin_family = AF_INET; /* usa host byte order */
-     their_addr.sin_port = htons(40006); /* usa network byte order */
-     //their_addr.sin_addr = 127.0.0.1;//*((struct in_addr *)he->h_addr);
-     inet_pton(AF_INET, "127.0.0.1", &their_addr.sin_addr);
-     bzero(&(their_addr.sin_zero), 8); /* pone en cero el resto */
+     their_addr.sin_family = AF_INET; 
+     their_addr.sin_port = htons(40000);
      
-     /* enviamos el mensaje */
-     struct timeval comienzo;
-
-       gettimeofday(&comienzo, NULL);
-       int time_ = comienzo.tv_usec;
-     if ((numbytes=sendto(sockfd,buffer,BUFFER_LEN,0,(struct sockaddr *)&their_addr, sizeof(struct sockaddr))) == -1) {
+     inet_pton(AF_INET, "127.0.0.1", &their_addr.sin_addr);
+     bzero(&(their_addr.sin_zero), 8); 
+     
+     if ((numbytes=sendto(sockfd,buffer,256,0,(struct sockaddr *)&their_addr, sizeof(struct sockaddr))) == -1) {
      perror("sendto");
      exit(1);
      }
-
-     printf("enviados %d bytes hacia %s\n",numbytes,inet_ntoa(their_addr.sin_addr));
-     /* cierro socket */
+     //printf("enviados %d bytes hacia %s\n",numbytes,inet_ntoa(their_addr.sin_addr));
+     
      close(sockfd);
   }
   
@@ -94,14 +89,10 @@
         exit(EXIT_FAILURE);
       }
  
-     struct timeval comienzo;
      bzero(buffer,256);
      n = read(ConnectFD,buffer,255);
      
-     gettimeofday(&comienzo, NULL);
-     int time_difference  = comienzo.tv_usec - atoi(buffer);
-     //cout <<"fin:  "<< comienzo.tv_sec <<"    "<<(float)comienzo.tv_usec/1000000<<endl;
-     cout << time_difference << endl;
+     cout << buffer << SocketFD<<endl;
      if (n < 0) perror("ERROR reading from socket");
      /* perform read write operations ... */
       shutdown(ConnectFD, SHUT_RDWR); 
@@ -110,7 +101,9 @@
   }
   int main(void)
   {
+
       funcion_server();
       funcion_client(); 
+    
     return 0;
   }

@@ -7,11 +7,17 @@
   #include <string.h>
   #include <unistd.h>
   #include <iostream>
+  #include <netdb.h>
   #include <sys/time.h>
+ 
   using namespace std;
+
+
   //cliente manda en TCP al servidor  pero el proxy lo intercepta
+
   int main(void)
   {
+
     struct sockaddr_in stSockAddr;
     int Res;
     int SocketFD = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -27,7 +33,7 @@
     memset(&stSockAddr, 0, sizeof(struct sockaddr_in));
  
     stSockAddr.sin_family = AF_INET;
-    stSockAddr.sin_port = htons(40000);
+    stSockAddr.sin_port = htons(40003);
     Res = inet_pton(AF_INET, "127.0.0.1", &stSockAddr.sin_addr);
  
     if (0 > Res)
@@ -49,15 +55,10 @@
       close(SocketFD);
       exit(EXIT_FAILURE);
     }
-    struct timeval comienzo;
-
-    gettimeofday(&comienzo, NULL);
-    //int sendin = htonl(i);
-    cout <<"inicio:   "<< comienzo.tv_sec <<"         "<< (float)comienzo.tv_usec/1000000<<endl;
-    n = write(SocketFD,"Hola",18);
-    n = write(SocketFD,&i,sizeof(i));
-    /* perform read write operations ... */
     
+    n = write(SocketFD,"Hola",18);
+    cout <<SocketFD<<endl;
+    GetIPAddress();
     shutdown(SocketFD, SHUT_RDWR);
  
     close(SocketFD);
